@@ -16,6 +16,10 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
   const navigate = useNavigate();
 
   useEffect(() => {
+    console.log("User:", user);
+  }, [user]);
+
+  useEffect(() => {
     if (currentUser) {
       setUser(currentUser);
       navigate("/dashboard/documents")
