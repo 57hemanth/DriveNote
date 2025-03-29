@@ -20,8 +20,13 @@ provider.addScope("https://www.googleapis.com/auth/drive.file"); // Google Drive
 const signInWithGoogle = async () => {
   try {
     const result = await signInWithPopup(auth, provider);
-    const token = await result.user.getIdToken(); // JWT Token for backend
-    return { user: result.user, token };
+    const credentials = GoogleAuthProvider.credentialFromResult(result);
+    const token = await result.user.getIdToken();
+    const accessToken = credentials?.accessToken;
+    if (accessToken) {
+      localStorage.setItem("googleAccessToken", accessToken);
+    }
+    return { user: result.user, token, accessToken };
   } catch (error) {
     console.error("Login failed", error);
   }

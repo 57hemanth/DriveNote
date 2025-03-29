@@ -16,7 +16,8 @@ import {
   SidebarRail,
 } from "@/components/ui/sidebar"
 import { List, LogOutIcon, Plus } from "lucide-react"
-import { Link } from "react-router-dom"
+import { Link, useNavigate } from "react-router-dom"
+import { getAuth, signOut } from "firebase/auth"
 
 // This is sample data.
 const data = {
@@ -44,9 +45,22 @@ export function AppSidebar({ activeItem, setActiveItem, ...props }: {
   setActiveItem: (item: string) => void;
 } & React.ComponentProps<typeof Sidebar>) {
 
+  const navigate = useNavigate();
+
   function handleClick(url: string){
     setActiveItem(url);
   }
+
+  const handleLogout = async () => {
+      const auth = getAuth();
+      try {
+        await signOut(auth);
+        console.log("User signed out successfully");
+        navigate("/login")
+      } catch (error) {
+        console.error("Error signing out:", error);
+      }
+  };
 
   return (
     <Sidebar {...props}>
@@ -54,7 +68,6 @@ export function AppSidebar({ activeItem, setActiveItem, ...props }: {
         <h1 className="font-pacifico px-2 text-2xl">DriveNote</h1>
       </SidebarHeader>
       <SidebarContent>
-        {/* We create a SidebarGroup for each parent. */}
         {data.navMain.map((item) => (
           <SidebarGroup key={item.title}>
             <SidebarGroupLabel>{item.title}</SidebarGroupLabel>
@@ -78,10 +91,10 @@ export function AppSidebar({ activeItem, setActiveItem, ...props }: {
       <SidebarFooter>
         <SidebarMenuItem>
           <SidebarMenuButton asChild>
-            <div>
+            <button className="cursor-pointer" onClick={() => handleLogout()}>
               <LogOutIcon />
-              <Link to={""}>Logout</Link>
-            </div>
+              <p>Logout</p>
+            </button>
           </SidebarMenuButton>
         </SidebarMenuItem>
       </SidebarFooter>

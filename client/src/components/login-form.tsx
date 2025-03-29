@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from "react";
 import { signInWithGoogle } from "../firebase";
+import axios from "axios";
 
 import { NotebookText } from "lucide-react";
 import { cn } from "../lib/utils";
@@ -7,22 +8,34 @@ import { cn } from "../lib/utils";
 import { User } from "firebase/auth";
 import { Button } from "./ui/button";
 import { useAuth } from "../context/AuthContext";
+import { useNavigate } from "react-router-dom";
 
 export function LoginForm({ className, ...props }: React.ComponentProps<"div">) {
   const [user, setUser] = useState<User | null>(null);
-  const currentUser = useAuth(); // Get authenticated user
+  const currentUser = useAuth();
+  const navigate = useNavigate();
 
   useEffect(() => {
     if (currentUser) {
       setUser(currentUser);
+      navigate("/dashboard/documents")
     }
-  }, [currentUser]); // Runs only when currentUser changes
+  }, [currentUser]);
 
   const handleLogin = async () => {
     try {
       const userInfo = await signInWithGoogle();
       if (userInfo) {
-        setUser(userInfo.user); // Make sure userInfo.user is a Firebase User
+        setUser(userInfo.user);
+        const res = await axios(`${import.meta.env.VITE_API_BASE_URL}/user/save`, {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${userInfo.token}`
+          }
+        })
+        if(res.status == 200){
+          console.log("User created successfully.")
+        }
       }
     } catch (error) {
       console.error("Login failed:", error);
@@ -42,14 +55,10 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
             </a>
             <h1 className="text-xl font-bold">Welcome to DriveNote.</h1>
             <div className="text-center text-sm">
-              Don&apos;t have an account?{" "}
-              <a href="/signup" className="underline underline-offset-4">
-                Sign up
-              </a>
+            Instant Saving. Anywhere, Anytime.
             </div>
           </div>
 
-          {/* ✅ Fix: Button now correctly calls handleLogin */}
           <Button variant="outline" type="button" className="w-full cursor-pointer" onClick={handleLogin}>
             <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" className="mr-2 h-5 w-5">
               <path
@@ -59,13 +68,6 @@ export function LoginForm({ className, ...props }: React.ComponentProps<"div">) 
             </svg>
             Continue with Google
           </Button>
-
-          {/* ✅ Show logged-in user email */}
-          {user && (
-            <div className="text-center mt-2">
-              <p>Signed in as <strong>{user.email}</strong></p>
-            </div>
-          )}
         </div>
       </form>
 
