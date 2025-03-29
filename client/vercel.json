@@ -1,0 +1,16 @@
+{
+    "redirects": [
+      {
+        "source": "/:match*",
+        "destination": "/",
+        "statusCode": 200
+      }
+    ],
+    "rewrites": [
+      {
+        "source": "/(.*)",
+        "destination": "/index.html"
+      }
+    ]
+  }
+  
