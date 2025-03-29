@@ -12,10 +12,7 @@ dotenv.config();
 const app = express();
 const allowedOrigin = process.env.FRONTEND_URL || "*";
 app.use(express.json());
-app.use(cors({
-    origin: allowedOrigin,
-    // credentials: true,
-}));
+app.use(cors());
 app.use(morgan("dev"));
 
 admin.initializeApp({
