@@ -14,7 +14,7 @@ const allowedOrigin = process.env.FRONTEND_URL || "*";
 app.use(express.json());
 app.use(cors({
     origin: allowedOrigin,
-    credentials: true,
+    // credentials: true,
 }));
 app.use(morgan("dev"));
 
